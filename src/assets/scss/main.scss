@@ -1,0 +1,149 @@
+@import '@/assets/scss/color.scss';
+@import '@/assets/scss/fonts.scss';
+
+body {
+  background-color: $secondary;
+}
+
+//Text Styling
+h1,
+h2,
+h3 {
+  font-family: 'MontserratBold';
+  color: $primary;
+}
+
+p {
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+}
+
+//Button
+button.primary {
+  height: 70px;
+  width: 100%;
+  color: $white;
+  background-color: $primary;
+  border: none;
+  cursor: pointer;
+  font-family: 'InterUIMedium';
+  font-size: 16px;
+}
+
+button.primary:disabled {
+  cursor: auto;
+  color: $black;
+  background-color: $secondary;
+}
+
+button.outlined {
+  color: black;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  .icon {
+    margin-right: 10px;
+    font-family: 'MaterialIconsRegular';
+  }
+  font-family: 'InterUIMedium';
+}
+
+//Input Field
+.input-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  input,
+  textarea {
+    padding: 3vh 4vw 3vh 1vw;
+    line-height: 2;
+    border: 1px solid #cccccc;
+    width: 100%;
+    font-family: 'InterUIBold';
+  }
+  input,
+  textarea::placeholder {
+    font-family: 'InterUIRegular';
+  }
+  input.valid,
+  textarea.valid {
+    border: 1px solid $correct;
+  }
+  input.invalid,
+  textarea.invalid {
+    border: 1px solid $primary;
+  }
+  .input-status {
+    font-family: 'MaterialIconsRegular';
+    z-index: 2;
+    position: absolute;
+    margin-right: 1.5vw;
+  }
+  .input-status.valid {
+    color: $correct;
+  }
+  .input-status.invalid {
+    color: $primary;
+  }
+
+  .char-counter {
+    z-index: 5;
+    position: absolute;
+    margin-right: 1.5vw;
+    margin-bottom: -7vh;
+  }
+  .char-counter.invalid {
+    color: #ff8a00;
+  }
+}
+
+// Content List
+
+.content-list {
+  display: inline-flex;
+  align-items: center;
+  .item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 70px;
+    min-width: fit-content;
+    width: 15vw;
+    max-width: 200px;
+    border: 1px solid #ccc;
+    color: #ccc;
+    padding: 5px 1vw;
+    cursor: pointer;
+    .item-content {
+      .info-1 {
+        margin-bottom: 0;
+        font-family: 'InterUIRegular';
+        font-size: 14px;
+      }
+      .info-2 {
+        margin-top: 0;
+        font-family: 'InterUIMedium';
+      }
+    }
+  }
+  .item + .item {
+    margin-left: 1vw;
+  }
+  .item:hover {
+    background-color: #eeeeee;
+  }
+  .item.active {
+    border: 1px solid $correct;
+    color: #000;
+    background-color: rgba($color: $correct, $alpha: 0.1);
+
+    .picked-status {
+      font-family: 'MaterialIconsRegular';
+      font-size: 20px;
+      color: $correct;
+    }
+  }
+}
