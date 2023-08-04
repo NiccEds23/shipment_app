@@ -424,4 +424,46 @@ export default {
     }
   }
 }
+
+@media (max-width: 975px) {
+  .content-heading {
+    flex-wrap: wrap;
+    .title {
+      order: 1;
+      font-size: 1.1rem;
+    }
+    .dropshipper {
+      order: 2;
+      .container {
+        font-size: 1em;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .content-heading {
+    .title {
+      width: 100%;
+      .title-ornamen {
+        width: 50vw;
+      }
+    }
+    .dropshipper {
+      justify-content: end;
+      width: 100%;
+      .container {
+        font-size: 1.2em;
+      }
+    }
+  }
+  .delivery-form {
+    form {
+      justify-content: center;
+      .field-space {
+        width: 100%;
+      }
+    }
+  }
+}
 </style>

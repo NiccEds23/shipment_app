@@ -168,6 +168,7 @@ export default {
     changeState(val) {
       this.paymentState = val
       localStorage.setItem('paymentState', val)
+      window.scrollTo(0, 0)
     }
   },
   watch: {
@@ -323,6 +324,40 @@ export default {
           justify-content: space-between;
         }
       }
+    }
+  }
+}
+
+//responsive
+@media (max-width: 975px) {
+  .content {
+    font-size: 16px;
+    .main-content {
+      .form-components {
+        margin: 3vw;
+        padding: 2vw;
+        order: 1;
+        width: 100%;
+      }
+      .summary {
+        margin: 3vw;
+        padding: 2vw;
+        order: 2;
+        width: 100%;
+        border-left: none;
+        border-top: 0.5px solid #ff8a00;
+        font-size: 1.3em;
+      }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .content {
+    font-size: 12px;
+    .main-content {
+      margin: 3vh;
+      margin-top: 5vh;
     }
   }
 }

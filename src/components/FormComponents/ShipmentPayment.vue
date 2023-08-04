@@ -220,4 +220,21 @@ export default {
     }
   }
 }
+
+@media (max-width: 975px) {
+  .shipment {
+    .content-heading {
+      .title-ornamen {
+        width: 50vw;
+      }
+    }
+  }
+  .payment {
+    .content-heading {
+      .title-ornamen {
+        width: 50vw;
+      }
+    }
+  }
+}
 </style>

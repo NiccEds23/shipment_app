@@ -27,7 +27,7 @@ button.primary {
   border: none;
   cursor: pointer;
   font-family: 'InterUIMedium';
-  font-size: 16px;
+  font-size: 1em;
 }
 
 button.primary:disabled {
@@ -119,13 +119,13 @@ button.outlined {
     cursor: pointer;
     .item-content {
       .info-1 {
-        margin-bottom: 0;
         font-family: 'InterUIRegular';
-        font-size: 14px;
+        font-size: 0.9em;
       }
       .info-2 {
         margin-top: 0;
         font-family: 'InterUIMedium';
+        font-size: 1em;
       }
     }
   }
@@ -144,6 +144,31 @@ button.outlined {
       font-family: 'MaterialIconsRegular';
       font-size: 20px;
       color: $correct;
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  // Input Warp
+  .input-wrap {
+    input,
+    textarea {
+      padding: 3vw;
+    }
+  }
+
+  // Content list
+  .content-list {
+    display: flex;
+    width: 100%;
+    .item {
+      width: 50%;
+      .item-content {
+        min-width: 30%;
+        .info-1 {
+          font-size: 1em;
+        }
+      }
     }
   }
 }
