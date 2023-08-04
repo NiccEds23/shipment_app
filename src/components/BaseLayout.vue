@@ -2,10 +2,7 @@
   <div class="content">
     <div class="payment-process">
       <ul class="breadcrumb">
-        <li
-          class="delivery"
-          :class="paymentState == 'delivery' || paymentState == 'payment' ? 'done' : ''"
-        >
+        <li class="delivery done">
           <div class="number">1</div>
           Delivery
         </li>
@@ -24,32 +21,75 @@
     </div>
     <div class="main-content">
       <div class="form-components">
-        <DeliveryDetails v-if="paymentState == 'delivery'" />
-        <ShipmentPayment v-if="paymentState == 'payment'" />
-        <ThankYou v-if="paymentState == 'finish'" />
+        <DeliveryDetails
+          v-if="paymentState == 'delivery'"
+          @setDropshipper="setDropshipper"
+          @setFormDeliveryStat="setFormDeliveryStat"
+        />
+        <ShipmentPayment
+          v-if="paymentState == 'payment'"
+          @setShipment="setShipment"
+          @setPayment="setPayment"
+          @changeState="changeState"
+        />
+        <ThankYou v-if="paymentState == 'finish'" @changeState="changeState" />
       </div>
+      <!-- Summary Section -->
       <div class="summary">
         <div class="title-sec">
           <h2>Summary</h2>
           <p>10 items purchase</p>
         </div>
-        <div class="delivery-est" v-if="paymentState == 'payment'">
+        <div class="delivery-est" :class="{ hidden: !shipmentData.courier }">
+          <div class="decoration" />
           <p class="title">Delivery estimation</p>
-          <p class="estimation"></p>
+          <p class="estimation">{{ shipmentData.estimation }} by {{ shipmentData.courier }}</p>
         </div>
-        <div class="payment-method" v-if="paymentState == 'finish'">
+        <div class="payment-method" :class="{ hidden: !paymentMethod }">
+          <div class="decoration" />
           <p class="title">Payment method</p>
-          <p class="method"></p>
+          <p class="method">{{ paymentMethod }}</p>
         </div>
         <div class="calculation">
-          <div class="cost-goods"></div>
-          <div class="dropship-fee"></div>
-          <div class="shipment"></div>
-          <div class="total"></div>
+          <div class="cost-goods">
+            <p class="text">Cost of goods</p>
+            <p class="price">{{ setDelimeter(goodsPrice) }}</p>
+          </div>
+          <div class="dropship-fee" v-if="dropshipper">
+            <p class="text">Dropshipping Fee</p>
+            <p class="price">{{ setDelimeter(dropshipPrice) }}</p>
+          </div>
+          <div class="shipment" v-if="shipmentData.courier">
+            <p class="text">
+              <b>{{ shipmentData.courier }}</b> shipment
+            </p>
+            <p class="price">{{ setDelimeter(shipmentData.price) }}</p>
+          </div>
+          <div class="total">
+            <h2 class="text">Total</h2>
+            <h2 class="price">{{ setDelimeter(totalPrice) }}</h2>
+          </div>
         </div>
         <div class="action-btn">
-          <button class="delivery"></button>
-          <button class="payment"></button>
+          <button
+            class="primary delivery"
+            :disabled="!formDeliveryCompleted"
+            v-if="paymentState == 'delivery'"
+            @click="changeState('payment')"
+          >
+            Continue to Payment
+          </button>
+          <button
+            class="primary payment"
+            :disabled="!shipmentPaymentCompleted"
+            v-if="paymentState == 'payment'"
+            @click="changeState('finish')"
+          >
+            <p v-if="paymentMethod">
+              Pay with <b>{{ paymentMethod }}</b>
+            </p>
+            <p v-else>(Please select payment method first)</p>
+          </button>
         </div>
       </div>
     </div>
@@ -60,20 +100,81 @@
 import DeliveryDetails from '@/components/FormComponents/DeliveryDetails.vue'
 import ShipmentPayment from '@/components/FormComponents/ShipmentPayment.vue'
 import ThankYou from '@/components/FormComponents//ThankYou.vue'
+import numeral from 'numeral'
 export default {
   data() {
     return {
-      paymentState: ''
+      paymentState: '',
+      dropshipper: false,
+      formDeliveryCompleted: false,
+      goodsPrice: 500000,
+      dropshipPrice: 0,
+      shipmentPrice: 0,
+      shipmentData: {
+        estimation: '',
+        courier: '',
+        price: 0
+      },
+      paymentMethod: ''
     }
   },
+  components: { DeliveryDetails, ShipmentPayment, ThankYou },
   mounted() {
-    console.log(localStorage.getItem('paymentState'))
     if (!localStorage.getItem('paymentState')) {
       localStorage.setItem('paymentState', 'delivery')
     }
     this.paymentState = localStorage.getItem('paymentState')
+    this.dropshipper = localStorage.getItem('dropshipCheck') == 'true' ? true : false
+    this.dropshipPrice = localStorage.getItem('dropshipPrice') ?? 0
+    this.shipmentData.courier = localStorage.getItem('shipmentCourier') ?? ''
+    this.shipmentData.estimation = localStorage.getItem('shipmentEstimation') ?? ''
+    this.shipmentData.price = localStorage.getItem('shipmentPrice') ?? 0
+    this.paymentMethod = localStorage.getItem('paymentMethod') ?? ''
+    this.tempShipmentPrice = localStorage.getItem('shipmentPrice') ?? 0
+    if (this.dropshipper) {
+      this.setDropshipper(true)
+    }
   },
-  components: { DeliveryDetails, ShipmentPayment, ThankYou }
+  computed: {
+    shipmentPaymentCompleted() {
+      if (this.shipmentData.courier && this.paymentMethod) return true
+      return false
+    },
+    totalPrice() {
+      let result =
+        this.goodsPrice + parseInt(this.dropshipPrice) + parseInt(this.shipmentData.price)
+      return result
+    }
+  },
+  methods: {
+    setDelimeter(val) {
+      return numeral(val).format('(0,0[.]000)')
+    },
+    setDropshipper(val) {
+      this.dropshipper = val
+      this.dropshipPrice = 5900
+    },
+    setFormDeliveryStat(val) {
+      this.formDeliveryCompleted = val
+    },
+    setShipment(val) {
+      this.shipmentData.estimation = val.estimation
+      this.shipmentData.courier = val.courier
+      this.shipmentData.price = val.price
+    },
+    setPayment(val) {
+      this.paymentMethod = val
+    },
+    changeState(val) {
+      this.paymentState = val
+      localStorage.setItem('paymentState', val)
+    }
+  },
+  watch: {
+    dropshipper(val) {
+      localStorage.setItem('dropshipPrice', val)
+    }
+  }
 }
 </script>
 
@@ -132,10 +233,96 @@ export default {
       width: 64%;
     }
     .summary {
-      margin-top: 3vh;
-      padding-left: 3vh;
-      width: 25%;
+      margin-top: 4vh;
+      padding: 0 3vh;
+      width: 26%;
       border-left: 0.5px solid #ff8a00;
+      .title-sec {
+        p {
+          margin-top: -10px;
+          font-family: 'InterUIRegular';
+          font-size: 14px;
+        }
+      }
+      .delivery-est {
+        visibility: visible;
+        .decoration {
+          margin: 3vh 0;
+          background-color: #eeeeee;
+          height: 2px;
+          width: 100px;
+        }
+        .title {
+          margin-bottom: 0;
+          font-family: 'InterUIRegular';
+        }
+        .estimation {
+          margin-top: 0;
+          font-family: 'InterUIMedium';
+          color: #1bd97b;
+        }
+      }
+      .delivery-est.hidden {
+        visibility: hidden;
+      }
+      .payment-method {
+        visibility: visible;
+        .decoration {
+          margin: 3vh 0;
+          background-color: #eeeeee;
+          height: 2px;
+          width: 100px;
+        }
+        .title {
+          margin-bottom: 0;
+          font-family: 'InterUIRegular';
+        }
+        .method {
+          margin-top: 0;
+          font-family: 'InterUIMedium';
+          color: #1bd97b;
+        }
+      }
+      .payment-method.hidden {
+        visibility: hidden;
+      }
+      .calculation {
+        margin-top: 6vh;
+        .cost-goods {
+          display: flex;
+          justify-content: space-between;
+          .text {
+            font-family: 'InterUIRegular';
+          }
+          .price {
+            font-family: 'InterUIBold';
+          }
+        }
+        .dropship-fee {
+          display: flex;
+          justify-content: space-between;
+          .text {
+            font-family: 'InterUIRegular';
+          }
+          .price {
+            font-family: 'InterUIBold';
+          }
+        }
+        .shipment {
+          display: flex;
+          justify-content: space-between;
+          .text {
+            font-family: 'InterUIRegular';
+          }
+          .price {
+            font-family: 'InterUIBold';
+          }
+        }
+        .total {
+          display: flex;
+          justify-content: space-between;
+        }
+      }
     }
   }
 }
