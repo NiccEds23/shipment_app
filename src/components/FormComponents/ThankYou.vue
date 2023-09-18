@@ -17,7 +17,7 @@
           <h1>{{ countdown }} s</h1>
         </div>
         <div class="recipient">
-          <p v-if="paymentMethod == 'Bank Transfer'">Bank Jakmall. {{ bankNumber }}</p>
+          <p v-if="paymentMethod == 'Bank Transfer'">Bank Istimewa. {{ bankNumber }}</p>
           <p v-else>Virtual Account. {{ vaNumber }}</p>
           <p>a.n. Nicholas Edson</p>
         </div>
